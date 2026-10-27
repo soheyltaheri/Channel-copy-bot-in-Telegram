@@ -1,46 +1,91 @@
-# Transfer Bot — quick setup
+# Telegram Channel Transfer & Cloner Bot
 
-This repository contains a Telegram transfer bot (`bot.py`) plus helper scripts to bootstrap and install it on a server.
+<p align="center">
+  <strong>Automated Telegram Channel Content Extraction, Video Watermarking & Migration Daemon</strong>
+</p>
 
-Files:
-- `bot.py` — main bot implementation (Pyrogram).
-- `requirements.txt` — Python dependencies.
-- `setup.sh` — opinionated installer for Debian/Ubuntu (creates venv, installs packages, creates systemd service).
-- `bootstrap.py` — cross-platform helper that creates venv, installs requirements and can start the bot interactively.
-- `Impact.ttf` — (optional) put this font next to `bot.py` if you want the video watermark to use it.
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB.svg?logo=python&logoColor=white" alt="Python Version" />
+  <img src="https://img.shields.io/badge/Pyrogram-v2.0-2CA5E0.svg?logo=telegram&logoColor=white" alt="Pyrogram" />
+  <img src="https://img.shields.io/badge/FFmpeg-Watermarking-007808.svg?logo=ffmpeg&logoColor=white" alt="FFmpeg" />
+  <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License" />
+</p>
 
-Quick steps (recommended on Debian/Ubuntu VPS):
+---
 
-1. Upload repository to server (SCP, git clone, or SFTP).
-2. Make `setup.sh` executable: `chmod +x setup.sh`.
-3. Run installer (may require sudo):
+## 📌 Overview
+
+**Telegram Channel Transfer Bot** is an enterprise-grade channel backup and migration utility engineered with **Pyrogram** and **FFmpeg**. Designed for high-volume content duplication, it safely clones complete channel histories, handles grouped media albums, strips external sponsor links, applies custom font watermarks to video payloads, and queues messages with rate-limit evasion.
+
+---
+
+## 🌟 Key Features
+
+- 🔄 **Full Channel History Migration:** Iterates through thousands of channel messages from origin to destination without message loss.
+- 🎬 **Dynamic Video Watermarking:** Integrates directly with `FFmpeg` to embed branded text or logo overlays onto videos on the fly.
+- 📦 **Album & Grouped Media Preservation:** Retains Telegram native album structures (multi-photo/video posts) during re-uploading.
+- 🧹 **Caption Sanitization & Rebranding:** Automated regex rules to clean unwanted hyperlinks, telegram mentions, and promotional tags before posting.
+- ⚙️ **Automated Linux Systemd Daemon:** Includes `setup.sh` and `bootstrap.py` for one-click setup, venv isolation, and background service creation.
+
+---
+
+## 🚀 Quickstart & Server Deployment
+
+### Recommended: Debian / Ubuntu Automated Setup
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/soheyltaheri/Channel-copy-bot-in-Telegram.git
+   cd Channel-copy-bot-in-Telegram
+   ```
+
+2. **Run the installer:**
+   ```bash
+   chmod +x setup.sh
+   ./setup.sh
+   ```
+   The installer automatically:
+   - Creates a Python virtual environment (`venv`).
+   - Installs all Pyrogram & cryptographic dependencies.
+   - Interactively requests your `API_ID`, `API_HASH`, and `BOT_TOKEN`.
+   - Generates a systemd daemon (`transferbot.service`) and enables autostart on reboot.
+
+---
+
+### Manual Cross-Platform Setup
 
 ```bash
-./setup.sh
+# 1. Install dependencies
+pip install -r requirements.txt
+
+# 2. Configure environment
+cat <<EOF > .env
+API_ID=your_api_id
+API_HASH=your_api_hash
+BOT_TOKEN=your_bot_token
+EOF
+
+# 3. Start interactively
+python bot.py
 ```
 
-The script will create a Python virtualenv, install Python requirements and optionally create a `.env` file. It can also run the bot once interactively to allow Pyrogram to prompt for the user login/session creation. At the end it creates a systemd service `transferbot` and starts it.
+---
 
-If you prefer a manual or cross-platform path use `bootstrap.py`:
+## ⚙️ Service Management
+
+To monitor the background transfer daemon on Linux:
 
 ```bash
-# Linux / macOS
-python3 bootstrap.py
+# Check service status
+sudo systemctl status transferbot
 
-# Windows (PowerShell)
-python bootstrap.py
+# View live streaming logs
+sudo journalctl -u transferbot -f
 ```
 
-`bootstrap.py` will create `venv`, install `requirements.txt`, check for `ffmpeg`, and optionally run the bot.
+---
 
-Important notes and troubleshooting
-- ffmpeg: required for video watermarking. On Debian/Ubuntu: `sudo apt install -y ffmpeg`. On Windows: download FFmpeg and add `ffmpeg.exe` to PATH.
-- Font for `add_text_watermark_to_video`: place `Impact.ttf` next to `bot.py` or modify `bot.py` to point to a system-installed TTF path.
-- Pyrogram user login: when the script runs the first time, Pyrogram may ask for phone number / login code for the `user` client; follow prompts in the terminal to create the session file.
-- `.env` contains sensitive credentials; keep it chmod 600 and do not commit to git.
-- Service logs: `sudo journalctl -u transferbot -f`.
+## 📄 License
 
-If you'd like, I can:
-- update `bot.py` to fall back to a system font path when `Impact.ttf` is missing,
-- generate a Windows Service / NSSM example for running the bot on Windows,
-- or try to run some quick static checks on `bot.py` for missing imports.
+This repository is distributed under the [MIT License](LICENSE).
+
